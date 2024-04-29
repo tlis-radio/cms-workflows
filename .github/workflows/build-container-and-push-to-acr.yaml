@@ -1,0 +1,36 @@
+on:
+  workflow_call:
+    inputs:
+      azure_container_registry:
+        required: true
+        type: string
+      release_name:
+        required: true
+        type: string 
+    secrets:
+      container_registry_username:
+        required: true
+      container_registry_password:
+        required: true
+
+jobs:
+  build-container-and-push-to-acr:
+    name: 'Build container and push to ACR'
+    environment: 'development'
+    runs-on: ubuntu-latest
+    steps:
+    # checkout the repo
+    - name: 'Checkout Github Action'
+      uses: actions/checkout@v3
+    # login to Azure Container Registry
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ inputs.azure_container_registry }}.azurecr.io
+        username: ${{ secrets.container_registry_username }}
+        password: ${{ secrets.container_registry_password }}
+    # build and push the image
+    - run: |
+        docker build . --file api.Dockerfile --tag ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}:${{ github.sha }}
+        docker push ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}:${{ github.sha }}
+        docker build . --file cli.Dockerfile --tag ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}-cli:${{ github.sha }}
+        docker push ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}-cli:${{ github.sha }}
