@@ -1,19 +1,19 @@
 on:
   workflow_call:
     inputs:
-      azure_container_registry:
+      azure-container-registry:
         required: true
         type: string
-      release_name:
+      release-name:
         required: true
         type: string 
       environment:
         required: true
         type: string 
     secrets:
-      container_registry_username:
+      container-registry-username:
         required: true
-      container_registry_password:
+      container-registry-password:
         required: true
 
 jobs:
@@ -28,12 +28,12 @@ jobs:
     # login to Azure Container Registry
     - uses: azure/docker-login@v1
       with:
-        login-server: ${{ inputs.azure_container_registry }}.azurecr.io
-        username: ${{ secrets.container_registry_username }}
-        password: ${{ secrets.container_registry_password }}
+        login-server: ${{ inputs.azure-container-registry }}.azurecr.io
+        username: ${{ secrets.container-registry-username }}
+        password: ${{ secrets.container-registry-password }}
     # build and push the image
     - run: |
-        docker build . --file api.Dockerfile --tag ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}:${{ github.sha }}
-        docker push ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}:${{ github.sha }}
-        docker build . --file cli.Dockerfile --tag ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}-cli:${{ github.sha }}
-        docker push ${{ inputs.azure_container_registry }}.azurecr.io/${{ inputs.release_name }}-cli:${{ github.sha }}
+        docker build . --file api.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ github.sha }}
+        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ github.sha }}
+        docker build . --file cli.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ github.sha }}
+        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ github.sha }}
