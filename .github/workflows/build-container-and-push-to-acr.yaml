@@ -7,6 +7,9 @@ on:
       release_name:
         required: true
         type: string 
+      environment:
+        required: true
+        type: string 
     secrets:
       container_registry_username:
         required: true
@@ -16,7 +19,7 @@ on:
 jobs:
   build-container-and-push-to-acr:
     name: 'Build container and push to ACR'
-    environment: 'development'
+    environment: '${{ inputs.environment }}'
     runs-on: ubuntu-latest
     steps:
     # checkout the repo
