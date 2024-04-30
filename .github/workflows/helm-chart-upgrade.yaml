@@ -19,9 +19,6 @@ on:
       helm-deployment-namespace:
         required: true
         type: string
-      helm-values:
-        required: true
-        type: string
       release-name:
         required: true
         type: string 
@@ -38,6 +35,8 @@ on:
       container-registry-username:
         required: true
       container-registry-password:
+        required: true
+      helm-values:
         required: true
 
 jobs:
@@ -81,7 +80,7 @@ jobs:
         echo $ | helm registry login ${{ inputs.azure-container-registry }}.azurecr.io --username ${{ secrets.container-registry-username }} --password ${{ secrets.container-registry-password }}
     # upgrade the chart
     - name: 'Create values file'
-      run: echo '${{ inputs.helm-values }}' > values.yaml
+      run: echo '${{ secrets.helm-values }}' > values.yaml
     - name: 'Upgrade chart'
       run: |
         helm upgrade ${{ inputs.release-name }} oci://${{ inputs.azure-container-registry }}.azurecr.io/helm/${{ inputs.release-name }} \
