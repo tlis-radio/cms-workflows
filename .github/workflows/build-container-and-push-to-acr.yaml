@@ -6,7 +6,10 @@ on:
         type: string
       release-name:
         required: true
-        type: string 
+        type: string
+      image-version:
+        required: true
+        type: string
       environment:
         required: true
         type: string 
@@ -33,7 +36,7 @@ jobs:
         password: ${{ secrets.container-registry-password }}
     # build and push the image
     - run: |
-        docker build . --file api.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ github.sha }}
-        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ github.sha }}
-        docker build . --file cli.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ github.sha }}
-        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ github.sha }}
+        docker build . --file api.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ inputs.image-version }}
+        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ inputs.image-version }}
+        docker build . --file cli.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ inputs.image-version }}
+        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ inputs.image-version }}
