@@ -27,10 +27,10 @@ jobs:
     steps:
     # checkout the repo
     - name: 'Checkout Github Action'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     # install helm
     - name: 'Install helm'
-      uses: Azure/setup-helm@v3
+      uses: Azure/setup-helm@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     # login to Azure Container Registry

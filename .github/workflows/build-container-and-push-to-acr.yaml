@@ -27,11 +27,11 @@ jobs:
     steps:
     # checkout the repo
     - name: 'Checkout Github Action'
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     # login to Azure Container Registry
-    - uses: azure/docker-login@v1
+    - uses: docker/login-action@v3
       with:
-        login-server: ${{ inputs.azure-container-registry }}.azurecr.io
+        registry: ${{ inputs.azure-container-registry }}.azurecr.io
         username: ${{ secrets.container-registry-username }}
         password: ${{ secrets.container-registry-password }}
     # build and push the image
