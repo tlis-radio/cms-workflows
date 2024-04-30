@@ -1,0 +1,92 @@
+on:
+  workflow_call:
+    inputs:
+      azure-k8s-resource-group:
+        required: true
+        type: string
+      azure-k8s-cluster-name:
+        required: true
+        type: string
+      azure-container-registry:
+        required: true
+        type: string
+      chart-version:
+        required: true
+        type: string 
+      helm-k8s-context:
+        required: true
+        type: string 
+      helm-deployment-namespace:
+        required: true
+        type: string
+      helm-values:
+        required: true
+        type: string
+      release-name:
+        required: true
+        type: string 
+      environment:
+        required: true
+        type: string
+    secrets:
+      azure-client-id:
+        required: true
+      azure-tenant-id:
+        required: true
+      azure-subscription-id:
+        required: true
+      container-registry-username:
+        required: true
+      container-registry-password:
+        required: true
+
+jobs:
+  helm-chart-upgrade:
+    name: 'Upgrade helm chart'
+    environment: '${{ inputs.environment }}'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+    # install helm
+    - name: 'Install helm'
+      uses: Azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    # login to Azure
+    - name: 'Azure login'
+      uses: azure/login@v1.4.6
+      with:
+        client-id: ${{ secrets.azure-client-id }}
+        tenant-id: ${{ secrets.azure-tenant-id }}
+        subscription-id: ${{ secrets.azure-subscription-id }}
+    # set up kubelogin for non-interactive login
+    - name: 'Set up kubelogin for non-interactive login'
+      uses: azure/use-kubelogin@v1
+      with:
+        kubelogin-version: 'v0.0.25'
+    # get the k8s context
+    - name: 'Get K8s context'
+      uses: azure/aks-set-context@v3
+      with:
+        resource-group: ${{ inputs.azure-k8s-resource-group }}
+        cluster-name: ${{ inputs.azure-k8s-cluster-name }}
+        admin: 'false'
+        use-kubelogin: 'true'
+    # login to Azure Container Registry
+    - name: 'Login to acr using helm'
+      run: |
+        echo $ | helm registry login ${{ inputs.azure-container-registry }}.azurecr.io --username ${{ secrets.container-registry-username }} --password ${{ secrets.container-registry-password }}
+    # upgrade the chart
+    - name: 'Create values file'
+      run: echo '${{ inputs.helm-values }}' > values.yaml
+    - name: 'Upgrade chart'
+      run: |
+        helm upgrade ${{ inputs.release-name }} oci://${{ inputs.azure-container-registry }}.azurecr.io/helm/${{ inputs.release-name }} \
+        --kube-context ${{ inputs.helm-k8s-context }} \
+        --version ${{ inputs.chart-version }} \
+        --install \
+        --create-namespace --namespace ${{ inputs.helm-deployment-namespace }} \
+        -f values.yaml

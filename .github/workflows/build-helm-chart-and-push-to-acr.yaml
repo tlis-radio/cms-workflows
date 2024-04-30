@@ -1,28 +1,28 @@
 on:
-    workflow_call:
-      inputs:
-        azure-container-registry:
-          required: true
-          type: string
-        release-name:
-          required: true
-          type: string 
-        image-version:
-          required: true
-          type: string
-        environment:
-          required: true
-          type: string 
-      secrets:
-        container-registry-username:
-          required: true
-        container-registry-password:
-          required: true
+  workflow_call:
+    inputs:
+      azure-container-registry:
+        required: true
+        type: string
+      release-name:
+        required: true
+        type: string 
+      image-version:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string 
+    secrets:
+      container-registry-username:
+        required: true
+      container-registry-password:
+        required: true
 
 jobs:
   build-helm-chart-and-push-to-acr:
     name: 'Build helm chart and push to ACR'
-    environment: 'development'
+    environment: '${{ inputs.environment }}'
     runs-on: ubuntu-latest
     steps:
     # checkout the repo
