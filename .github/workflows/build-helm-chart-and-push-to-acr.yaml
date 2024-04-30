@@ -31,8 +31,6 @@ jobs:
     # install helm
     - name: 'Install helm'
       uses: Azure/setup-helm@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
     # login to Azure Container Registry
     - name: 'Login to acr using helm'
       run: |

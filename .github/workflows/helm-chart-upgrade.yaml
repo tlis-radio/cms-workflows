@@ -52,8 +52,6 @@ jobs:
     # install helm
     - name: 'Install helm'
       uses: Azure/setup-helm@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
     # login to Azure
     - name: 'Azure login'
       uses: azure/login@v2
