@@ -13,6 +13,9 @@ on:
       environment:
         required: true
         type: string 
+      dockerfile:
+        required: true
+        type: string
     secrets:
       container-registry-username:
         required: true
@@ -36,7 +39,5 @@ jobs:
         password: ${{ secrets.container-registry-password }}
     # build and push the image
     - run: |
-        docker build . --file api.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ inputs.image-version }}
+        docker build . --file ${{ inputs.dockerfile }} --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ inputs.image-version }}
         docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}:${{ inputs.image-version }}
-        docker build . --file cli.Dockerfile --tag ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ inputs.image-version }}
-        docker push ${{ inputs.azure-container-registry }}.azurecr.io/${{ inputs.release-name }}-cli:${{ inputs.image-version }}
